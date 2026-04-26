@@ -155,6 +155,7 @@ let myColor = savedUser.color && !takenColors().has(savedUser.color)
 let pending = committedSetForMe();
 let settings = loadSettings();
 if (!["one", "three"].includes(settings.viewMode)) settings.viewMode = defaultSettings.viewMode;
+if (window.innerWidth <= 720) settings.viewMode = "one";
 settings.activeMonth = Math.min(Math.max(Number(settings.activeMonth) || 0, 0), monthWindow.length - 1);
 
 nameInput.value = myName;
@@ -895,6 +896,34 @@ canvas.addEventListener("click", (event) => {
   const tileGroup = tileGroupFromEvent(event);
   if (!tileGroup) return;
   tileClick(tileGroup.userData.dateKey);
+});
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchMoved = false;
+
+canvas.addEventListener("touchstart", (event) => {
+  if (event.touches.length !== 1) return;
+  touchStartX = event.touches[0].clientX;
+  touchStartY = event.touches[0].clientY;
+  touchMoved = false;
+}, { passive: true });
+
+canvas.addEventListener("touchmove", (event) => {
+  if (event.touches.length !== 1) return;
+  event.preventDefault();
+  touchMoved = true;
+  updateMouseRotation({ clientX: event.touches[0].clientX, clientY: event.touches[0].clientY });
+}, { passive: false });
+
+canvas.addEventListener("touchend", (event) => {
+  targetMouseRotX = 0;
+  targetMouseRotY = 0;
+  if (!touchMoved) {
+    const touch = event.changedTouches[0];
+    const tileGroup = tileGroupFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
+    if (tileGroup) tileClick(tileGroup.userData.dateKey);
+  }
 });
 
 nameInput.addEventListener("input", () => {

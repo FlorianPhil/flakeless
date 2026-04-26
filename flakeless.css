@@ -605,4 +605,8 @@ h1 {
   .action-bar button {
     flex: 1;
   }
+
+  #view-three-btn {
+    display: none;
+  }
 }
