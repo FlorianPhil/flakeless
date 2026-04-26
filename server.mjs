@@ -50,5 +50,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Trip Towers running at http://${host}:${port}`);
+  console.log(`Flakeless running at http://${host}:${port}`);
 });

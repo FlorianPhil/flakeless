@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { seedFakeFriends } from "./trip-towers-seed.js";
+import { seedFakeFriends } from "./flakeless-seed.js";
 
-const STORAGE_KEY = "trip-towers-v6";
+const STORAGE_KEY = "flakeless-v6";
 const UID_KEY = "trip-towers-uid";
 const SETTINGS_KEY = "flakeless-settings-v4";
 
