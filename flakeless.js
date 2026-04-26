@@ -1,8 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
-const STORAGE_KEY = "flakeless-v6";
-const UID_KEY = "trip-towers-uid";
+const UID_KEY = "flakeless-uid";
 const SETTINGS_KEY = "flakeless-settings-v4";
 
 const presetColors = [
@@ -17,15 +16,15 @@ const presetColors = [
   "#1f2937"
 ];
 
-const load = () => {
+async function fetchState() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { users: {}, picks: {} };
+    const res = await fetch("/api/state");
+    if (!res.ok) throw new Error();
+    return await res.json();
   } catch {
     return { users: {}, picks: {} };
   }
-};
-
-const save = (state) => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
 const defaultSettings = {
   yaw: 10,
@@ -127,9 +126,7 @@ function plural(count, singular, pluralText = `${singular}s`) {
   return count === 1 ? singular : pluralText;
 }
 
-let state = load();
-state.users ||= {};
-state.picks ||= {};
+let state = { users: {}, picks: {} };
 
 const myId = getMyId();
 const monthWindow = [getMonthData(1), getMonthData(2), getMonthData(3)];
@@ -621,14 +618,7 @@ function syncMyColor() {
   }
 }
 
-function clearMyCommittedPicks() {
-  for (const dateKey of Object.keys(state.picks)) {
-    state.picks[dateKey] = state.picks[dateKey].filter((uid) => uid !== myId);
-    if (state.picks[dateKey].length === 0) delete state.picks[dateKey];
-  }
-}
-
-function lockPicks() {
+async function lockPicks() {
   myName = nameInput.value.trim();
   if (!myName) {
     setNameWarning(true, "Name required before locking picks.");
@@ -641,17 +631,25 @@ function lockPicks() {
     return;
   }
 
-  clearMyCommittedPicks();
-  state.users[myId] = { name: myName, color: myColor };
-  for (const dateKey of pending) {
-    state.picks[dateKey] ||= [];
-    if (!state.picks[dateKey].includes(myId)) state.picks[dateKey].push(myId);
+  lockBtn.disabled = true;
+  renderStatus("Saving...");
+
+  try {
+    const res = await fetch("/api/lock", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: myId, name: myName, color: myColor, dates: [...pending] })
+    });
+    if (!res.ok) throw new Error();
+    state = await fetchState();
+    syncAll({ animateNew: false, animateRemove: false });
+    renderSwatches();
+    renderLegend();
+    renderStatus(`Locked ${pending.size} ${plural(pending.size, "date")}.`);
+  } catch {
+    renderStatus("Save failed. Check connection.");
+    lockBtn.disabled = false;
   }
-  save(state);
-  syncAll({ animateNew: false, animateRemove: false });
-  renderSwatches();
-  renderLegend();
-  renderStatus(`Locked ${pending.size} ${plural(pending.size, "date")}.`);
 }
 
 function resetPending() {
@@ -1037,12 +1035,33 @@ renderSwatches();
 renderLegend();
 renderStatus();
 
-requestAnimationFrame(() => {
+requestAnimationFrame(async () => {
   resize();
   sceneReady = true;
-  syncAll({ animateNew: true });
   last = performance.now();
   animate(last);
+  state = await fetchState();
+  const savedUser = state.users[myId] || {};
+  if (savedUser.name) {
+    myName = savedUser.name;
+    nameInput.value = myName;
+  }
+  if (savedUser.color && !takenColors().has(savedUser.color)) {
+    myColor = savedUser.color;
+  }
+  pending = committedSetForMe();
+  syncAll({ animateNew: true });
+  renderSwatches();
+  renderLegend();
+  renderStatus();
+});
+
+window.addEventListener("focus", async () => {
+  state = await fetchState();
+  syncAll({ animateNew: true, animateRemove: true });
+  renderSwatches();
+  renderLegend();
+  renderStatus();
 });
 
 window.addEventListener("resize", resize);
