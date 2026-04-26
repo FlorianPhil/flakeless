@@ -20,7 +20,6 @@
           <div class="title-block">
             <h1>Flakeless</h1>
             <p class="tagline">By Florian P.</p>
-            <p id="window-label" class="window-label">One last Mammoth Trip?</p>
           </div>
         </div>
 
@@ -36,18 +35,13 @@
             <div id="color-swatches" class="swatches" aria-label="Color choices"></div>
           </div>
 
-          <div class="action-row">
-            <button id="lock-btn" type="button">Lock it in</button>
-            <button id="reset-btn" type="button" class="secondary">Clear picks</button>
-          </div>
-
           <div class="view-controls" aria-label="Calendar view">
             <div class="view-toggle" role="group" aria-label="View mode">
               <button id="view-three-btn" type="button" aria-pressed="true">3 months</button>
               <button id="view-one-btn" type="button" aria-pressed="false">1 month</button>
             </div>
             <div class="month-stepper" aria-label="Focused month">
-              <output id="focus-month-label" aria-live="polite">April 2026</output>
+              <output id="focus-month-label" aria-live="polite">May 2026</output>
             </div>
           </div>
         </div>
@@ -62,37 +56,12 @@
         <canvas id="scene-canvas"></canvas>
         <button id="prev-month-btn" class="month-edge-nav month-edge-nav--prev" type="button" aria-label="Previous month">&lsaquo;</button>
         <button id="next-month-btn" class="month-edge-nav month-edge-nav--next" type="button" aria-label="Next month">&rsaquo;</button>
-        <section class="tweak-panel" aria-label="Tweaks">
-          <div class="tweak-head">
-            <h2>Tweaks</h2>
-            <button id="reset-view-btn" type="button">Reset angle</button>
-          </div>
-          <div class="tweak-grid">
-            <label class="range-field">
-              <span>Yaw <output id="yaw-output" for="angle-yaw">0</output></span>
-              <input id="angle-yaw" type="range" min="-18" max="18" step="0.5" value="10">
-            </label>
-            <label class="range-field">
-              <span>Pitch <output id="pitch-output" for="angle-pitch">0</output></span>
-              <input id="angle-pitch" type="range" min="-8" max="8" step="0.5" value="0">
-            </label>
-            <label class="range-field">
-              <span>Animation <output id="speed-output" for="anim-speed">1.00x</output></span>
-              <input id="anim-speed" type="range" min="0.45" max="1.85" step="0.05" value="1.85">
-            </label>
-            <div class="toggle-row">
-              <label class="toggle-field">
-                <input id="mouse-follow" type="checkbox" checked>
-                <span>Mouse drift</span>
-              </label>
-              <label class="toggle-field">
-                <input id="date-caps" type="checkbox">
-                <span>Date caps</span>
-              </label>
-            </div>
-          </div>
-        </section>
       </section>
+
+      <div class="action-bar">
+        <button id="lock-btn" type="button">Lock it in</button>
+        <button id="reset-btn" type="button" class="secondary">Clear picks</button>
+      </div>
     </main>
 
     <script>

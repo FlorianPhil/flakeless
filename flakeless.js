@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { seedFakeFriends } from "./flakeless-seed.js";
 
 const STORAGE_KEY = "flakeless-v6";
 const UID_KEY = "trip-towers-uid";
@@ -133,8 +132,7 @@ state.users ||= {};
 state.picks ||= {};
 
 const myId = getMyId();
-const monthWindow = [getMonthData(0), getMonthData(1), getMonthData(2)];
-seedFakeFriends(state, monthWindow, presetColors, save);
+const monthWindow = [getMonthData(1), getMonthData(2), getMonthData(3)];
 
 const nameField = document.getElementById("name-field");
 const nameInput = document.getElementById("name-input");
@@ -144,18 +142,8 @@ const lockBtn = document.getElementById("lock-btn");
 const resetBtn = document.getElementById("reset-btn");
 const statusEl = document.getElementById("status");
 const legendEl = document.getElementById("legend");
-const windowLabel = document.getElementById("window-label");
 const canvas = document.getElementById("scene-canvas");
 const scenePanel = document.querySelector(".scene-panel");
-const yawInput = document.getElementById("angle-yaw");
-const pitchInput = document.getElementById("angle-pitch");
-const animSpeedInput = document.getElementById("anim-speed");
-const mouseFollowInput = document.getElementById("mouse-follow");
-const dateCapsInput = document.getElementById("date-caps");
-const resetViewBtn = document.getElementById("reset-view-btn");
-const yawOutput = document.getElementById("yaw-output");
-const pitchOutput = document.getElementById("pitch-output");
-const speedOutput = document.getElementById("speed-output");
 const viewThreeBtn = document.getElementById("view-three-btn");
 const viewOneBtn = document.getElementById("view-one-btn");
 const prevMonthBtn = document.getElementById("prev-month-btn");
@@ -173,7 +161,6 @@ if (!["one", "three"].includes(settings.viewMode)) settings.viewMode = defaultSe
 settings.activeMonth = Math.min(Math.max(Number(settings.activeMonth) || 0, 0), monthWindow.length - 1);
 
 nameInput.value = myName;
-windowLabel.textContent = "One last Mammoth Trip?";
 
 const TILE_SIZE = 1;
 const TILE_GAP = 0.18;
@@ -787,17 +774,6 @@ function setNameWarning(show, message = "Name required before choosing dates.") 
   if (show) nameError.textContent = message;
 }
 
-function renderSettingsControls() {
-  yawInput.value = String(settings.yaw);
-  pitchInput.value = String(settings.pitch);
-  animSpeedInput.value = String(settings.animSpeed);
-  mouseFollowInput.checked = !!settings.mouseFollow;
-  dateCapsInput.checked = !!settings.dateCaps;
-  yawOutput.value = `${Number(settings.yaw).toFixed(1)} deg`;
-  pitchOutput.value = `${Number(settings.pitch).toFixed(1)} deg`;
-  speedOutput.value = `${Number(settings.animSpeed).toFixed(2)}x`;
-}
-
 function renderViewControls() {
   const isOne = settings.viewMode === "one";
   viewThreeBtn.setAttribute("aria-pressed", String(!isOne));
@@ -869,28 +845,6 @@ function stepFocusedMonth(delta) {
   beginMonthSlide(previousMonth, nextMonth);
 }
 
-function updateSettingsFromControls() {
-  const prevDateCaps = !!settings.dateCaps;
-  settings = {
-    yaw: Number(yawInput.value),
-    pitch: Number(pitchInput.value),
-    animSpeed: Number(animSpeedInput.value),
-    mouseFollow: mouseFollowInput.checked,
-    dateCaps: dateCapsInput.checked,
-    viewMode: settings.viewMode,
-    activeMonth: settings.activeMonth
-  };
-
-  if (!settings.mouseFollow) {
-    targetMouseRotX = 0;
-    targetMouseRotY = 0;
-  }
-
-  saveSettings();
-  renderSettingsControls();
-  if (prevDateCaps !== settings.dateCaps) refreshDateCaps();
-}
-
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
@@ -954,16 +908,6 @@ nameInput.addEventListener("input", () => {
 
 lockBtn.addEventListener("click", lockPicks);
 resetBtn.addEventListener("click", resetPending);
-yawInput.addEventListener("input", updateSettingsFromControls);
-pitchInput.addEventListener("input", updateSettingsFromControls);
-animSpeedInput.addEventListener("input", updateSettingsFromControls);
-mouseFollowInput.addEventListener("change", updateSettingsFromControls);
-dateCapsInput.addEventListener("change", updateSettingsFromControls);
-resetViewBtn.addEventListener("click", () => {
-  yawInput.value = String(defaultSettings.yaw);
-  pitchInput.value = String(defaultSettings.pitch);
-  updateSettingsFromControls();
-});
 viewThreeBtn.addEventListener("click", () => setViewMode("three"));
 viewOneBtn.addEventListener("click", () => setViewMode("one"));
 prevMonthBtn.addEventListener("click", () => stepFocusedMonth(-1));
@@ -1088,7 +1032,6 @@ function animate(now = performance.now()) {
 }
 
 monthWindow.forEach((monthData, index) => buildBoard(index, monthData));
-renderSettingsControls();
 applyMonthView();
 renderSwatches();
 renderLegend();
