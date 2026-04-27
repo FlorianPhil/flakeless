@@ -571,6 +571,9 @@ function syncTile(dateKey, tileEntry, opts = {}) {
     if (!desiredByKey.has(cubeRef.key)) {
       cubeRef.leaving = true;
       removeDateCap(cubeRef);
+      for (let i = springs.length - 1; i >= 0; i--) {
+        if (springs[i].obj === cubeRef.mesh && springs[i].mode === "drop") springs.splice(i, 1);
+      }
       if (animateRemove) queueLift(tower, cubeRef);
       else removeCubeRef(tower, cubeRef);
     } else {
