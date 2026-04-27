@@ -641,9 +641,14 @@ async function lockPicks() {
   }
 }
 
-function resetPending() {
-  pending = committedSetForMe();
-  syncAll({ animateNew: true, animateRemove: true });
+async function resetPending() {
+  pending = new Set();
+  renderStatus("Clearing...");
+  try {
+    await fetch(`/api/admin/users?userId=${encodeURIComponent(myId)}`, { method: "DELETE" });
+    state = await fetchState();
+  } catch { /* best effort */ }
+  syncAll({ animateRemove: true });
   renderLegend();
   renderStatus();
 }
