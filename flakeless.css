@@ -74,17 +74,37 @@ button {
 }
 
 .brand-block {
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  align-items: start;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   min-width: 0;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  user-select: none;
+}
+
+.brand-wordmark {
+  font-size: 18px;
+  font-weight: 820;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.brand-wordmark span {
+  color: var(--orange);
 }
 
 .brand-mark {
   position: relative;
-  width: 32px;
-  height: 46px;
+  width: 22px;
+  height: 32px;
+  flex-shrink: 0;
 }
 
 .brand-mark::before {
@@ -101,22 +121,22 @@ button {
 
 .brand-mark span:nth-child(1) {
   bottom: 0;
-  width: 32px;
-  height: 13px;
+  width: 22px;
+  height: 9px;
   background: var(--orange);
 }
 
 .brand-mark span:nth-child(2) {
-  bottom: 17px;
-  width: 26px;
-  height: 13px;
+  bottom: 12px;
+  width: 17px;
+  height: 9px;
   background: var(--blue);
 }
 
 .brand-mark span:nth-child(3) {
-  bottom: 34px;
-  width: 20px;
-  height: 13px;
+  bottom: 24px;
+  width: 13px;
+  height: 9px;
   background: var(--yellow);
 }
 
@@ -153,15 +173,6 @@ h1 {
   opacity: 0.7;
 }
 
-.app-name {
-  margin: 0 0 5px;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.55;
-}
 
 .copyright {
   margin: 0;
@@ -601,8 +612,8 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .brand-block {
-    grid-template-columns: 44px minmax(0, 1fr);
+  .brand-wordmark {
+    font-size: 16px;
   }
 
   h1 {
