@@ -912,7 +912,9 @@ canvas.addEventListener("touchstart", (event) => {
 canvas.addEventListener("touchmove", (event) => {
   if (event.touches.length !== 1) return;
   event.preventDefault();
-  touchMoved = true;
+  const dx = event.touches[0].clientX - touchStartX;
+  const dy = event.touches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 6 || Math.abs(dy) > 6) touchMoved = true;
   updateMouseRotation({ clientX: event.touches[0].clientX, clientY: event.touches[0].clientY });
 }, { passive: false });
 
