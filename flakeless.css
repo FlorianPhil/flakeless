@@ -594,7 +594,12 @@ h1 {
     flex-direction: column;
   }
 
-  .view-toggle {
+  .view-toggle,
+  .month-edge-nav {
+    display: none;
+  }
+
+  .tagline {
     display: none;
   }
 
@@ -603,9 +608,17 @@ h1 {
     justify-content: space-between;
   }
 
+  .planner-controls {
+    gap: 8px 10px;
+  }
+
+  .field input {
+    min-height: 36px;
+  }
+
   .scene-panel {
-    height: 480px;
-    min-height: 480px;
+    height: 52vh;
+    min-height: 260px;
   }
 
   .action-bar {

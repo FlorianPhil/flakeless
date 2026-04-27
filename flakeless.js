@@ -188,8 +188,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true 
 renderer.setClearColor(0x000000, 0);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = false;
 
 const scene = new THREE.Scene();
 const sceneRoot = new THREE.Group();
@@ -204,26 +203,12 @@ scene.add(hemi);
 
 const keyLight = new THREE.DirectionalLight(0xffffff, 3.25);
 keyLight.position.set(-7, 12, 6);
-keyLight.castShadow = true;
-keyLight.shadow.mapSize.set(2048, 2048);
-keyLight.shadow.camera.left = -22;
-keyLight.shadow.camera.right = 22;
-keyLight.shadow.camera.top = 18;
-keyLight.shadow.camera.bottom = -18;
 scene.add(keyLight);
 
 const rimLight = new THREE.DirectionalLight(0xbcecff, 1.05);
 rimLight.position.set(8, 5, -9);
 scene.add(rimLight);
 
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(TOTAL_W + 10, BOARD_D + 12),
-  new THREE.ShadowMaterial({ opacity: 0.18 })
-);
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = -0.015;
-ground.receiveShadow = true;
-scene.add(ground);
 
 const boardGeometry = new RoundedBoxGeometry(BOARD_W, BOARD_H, BOARD_D, 3, 0.08);
 const tileGeometry = new RoundedBoxGeometry(TILE_SIZE, TILE_HEIGHT, TILE_SIZE, 2, 0.035);
