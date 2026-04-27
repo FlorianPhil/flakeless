@@ -245,6 +245,39 @@
         opacity: 1;
         transform: translateX(-50%) translateY(0);
       }
+
+      .event-toggle {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px;
+        background: rgba(255,255,255,0.38);
+        border: 1px solid rgba(255,255,255,0.75);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(74,85,104,0.07);
+        margin-bottom: 24px;
+      }
+
+      .event-toggle button {
+        min-height: 30px;
+        padding: 0 16px;
+        color: var(--ink);
+        background: transparent;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .event-toggle button:hover {
+        background: rgba(255,255,255,0.7);
+      }
+
+      .event-toggle button.active {
+        background: var(--ink);
+        color: #fff;
+      }
     </style>
   </head>
   <body>
@@ -256,6 +289,11 @@
           <button class="btn clear-all" id="clear-all-btn">Clear all</button>
         </div>
       </header>
+
+      <div class="event-toggle">
+        <button id="tab-mammoth" class="active" onclick="switchEvent('mammoth')">Mammoth Trip</button>
+        <button id="tab-dome" onclick="switchEvent('dome')">Dome Hangout</button>
+      </div>
 
       <div class="stats">
         <div class="stat-card">
@@ -289,11 +327,19 @@
 
     <script>
       let stateData = { users: {}, picks: {} };
+      let currentEvent = "mammoth";
+
+      function switchEvent(event) {
+        currentEvent = event;
+        document.getElementById("tab-mammoth").classList.toggle("active", event === "mammoth");
+        document.getElementById("tab-dome").classList.toggle("active", event === "dome");
+        loadData();
+      }
 
       async function loadData() {
         const [usersRes, stateRes] = await Promise.all([
-          fetch("/api/admin/users"),
-          fetch("/api/state")
+          fetch(`/api/admin/users?event=${currentEvent}`),
+          fetch(`/api/state?event=${currentEvent}`)
         ]);
         const users = await usersRes.json();
         stateData = await stateRes.json();
@@ -357,7 +403,7 @@
 
       async function deleteUser(userId, name) {
         if (!confirm(`Remove ${name} and all their picks?`)) return;
-        await fetch(`/api/admin/users?userId=${encodeURIComponent(userId)}`, { method: "DELETE" });
+        await fetch(`/api/admin/users?userId=${encodeURIComponent(userId)}&event=${currentEvent}`, { method: "DELETE" });
         toast(`${name} removed`);
         loadData();
       }
@@ -365,7 +411,7 @@
       document.getElementById("clear-all-btn").addEventListener("click", async () => {
         if (!confirm("Delete all participants and picks? This cannot be undone.")) return;
         const users = Array.from(document.querySelectorAll(".user-row")).map(el => el.dataset.id);
-        await Promise.all(users.map(id => fetch(`/api/admin/users?userId=${encodeURIComponent(id)}`, { method: "DELETE" })));
+        await Promise.all(users.map(id => fetch(`/api/admin/users?userId=${encodeURIComponent(id)}&event=${currentEvent}`, { method: "DELETE" })));
         toast("All data cleared");
         loadData();
       });

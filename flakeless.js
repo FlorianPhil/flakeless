@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
+const EVENT_ID = document.documentElement.dataset.event || "mammoth";
 const UID_KEY = "flakeless-uid";
-const SETTINGS_KEY = "flakeless-settings-v4";
+const SETTINGS_KEY = `flakeless-settings-${EVENT_ID}-v1`;
 
 const presetColors = [
   "#ff5a3c",
@@ -18,7 +19,7 @@ const presetColors = [
 
 async function fetchState() {
   try {
-    const res = await fetch("/api/state");
+    const res = await fetch(`/api/state?event=${EVENT_ID}`);
     if (!res.ok) throw new Error();
     return await res.json();
   } catch {
@@ -627,7 +628,7 @@ async function lockPicks() {
     const res = await fetch("/api/lock", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: myId, name: myName, color: myColor, dates: [...pending] })
+      body: JSON.stringify({ userId: myId, name: myName, color: myColor, dates: [...pending], event: EVENT_ID })
     });
     if (!res.ok) throw new Error();
     state = await fetchState();
@@ -645,7 +646,7 @@ async function resetPending() {
   pending = new Set();
   renderStatus("Clearing...");
   try {
-    await fetch(`/api/admin/users?userId=${encodeURIComponent(myId)}`, { method: "DELETE" });
+    await fetch(`/api/admin/users?userId=${encodeURIComponent(myId)}&event=${EVENT_ID}`, { method: "DELETE" });
     state = await fetchState();
   } catch { /* best effort */ }
   syncAll({ animateRemove: true });

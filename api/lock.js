@@ -3,7 +3,8 @@ import { sql } from "@vercel/postgres";
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const { userId, name, color, dates } = req.body;
+  const { userId, name, color, dates, event } = req.body;
+  const eventId = event || "mammoth";
 
   if (!userId || !name || !color || !Array.isArray(dates)) {
     return res.status(400).json({ error: "Invalid payload" });
@@ -15,12 +16,12 @@ export default async function handler(req, res) {
     ON CONFLICT (id) DO UPDATE SET name = ${name}, color = ${color}
   `;
 
-  await sql`DELETE FROM fl_picks WHERE user_id = ${userId}`;
+  await sql`DELETE FROM fl_picks WHERE user_id = ${userId} AND event_id = ${eventId}`;
 
   for (const dateKey of dates) {
     await sql`
-      INSERT INTO fl_picks (user_id, date_key)
-      VALUES (${userId}, ${dateKey})
+      INSERT INTO fl_picks (user_id, event_id, date_key)
+      VALUES (${userId}, ${eventId}, ${dateKey})
       ON CONFLICT DO NOTHING
     `;
   }

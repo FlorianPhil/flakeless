@@ -423,34 +423,31 @@ h1 {
 }
 
 .calendar-cta {
-  margin: 0;
-  text-align: center;
-  color: var(--muted);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  padding: 2px 0;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0;
+  padding: 0 4px;
 }
 
 .help-btn {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
-  height: 15px;
-  padding: 0;
-  margin-left: 5px;
-  background: rgba(107, 122, 141, 0.12);
-  border: 1px solid rgba(107, 122, 141, 0.28);
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  color: var(--muted);
-  font-size: 9px;
+  border: 1.5px solid rgba(31, 41, 55, 0.22);
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
   font-weight: 800;
+  color: var(--muted);
   cursor: pointer;
-  vertical-align: middle;
+  padding: 0;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .help-tooltip {
@@ -458,37 +455,24 @@ h1 {
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  width: 230px;
-  padding: 10px 13px;
-  background: rgba(28, 43, 58, 0.94);
-  color: rgba(255, 255, 255, 0.92);
+  width: 220px;
+  padding: 10px 12px;
+  background: var(--ink);
+  color: #fff;
   font-size: 12px;
   font-weight: 500;
-  line-height: 1.55;
+  line-height: 1.5;
   border-radius: 10px;
+  z-index: 20;
+  display: none;
   text-align: left;
-  text-transform: none;
-  letter-spacing: 0;
   pointer-events: none;
-  opacity: 0;
   white-space: normal;
-  z-index: 30;
-  transition: opacity 160ms ease;
-}
-
-.help-tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: rgba(28, 43, 58, 0.94);
 }
 
 .help-btn:hover .help-tooltip,
 .help-btn:focus-visible .help-tooltip {
-  opacity: 1;
+  display: block;
 }
 
 .scene-panel {
@@ -713,6 +697,12 @@ h1 {
 
   .field input {
     min-height: 36px;
+  }
+
+  .calendar-cta {
+    font-size: 11px;
+    text-align: center;
+    justify-content: center;
   }
 
   .help-tooltip {
