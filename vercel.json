@@ -1,6 +1,9 @@
 {
   "buildCommand": "vite build",
   "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/mammoth-q2", "destination": "/" }
+  ],
   "headers": [
     {
       "source": "/",

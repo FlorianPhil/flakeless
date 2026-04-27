@@ -50,7 +50,7 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 8px;
   width: min(1500px, calc(100vw - 28px));
   height: calc(100vh - 28px);
@@ -422,6 +422,75 @@ h1 {
   font-weight: 780;
 }
 
+.calendar-cta {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+
+.help-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  margin-left: 5px;
+  background: rgba(107, 122, 141, 0.12);
+  border: 1px solid rgba(107, 122, 141, 0.28);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.help-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  padding: 10px 13px;
+  background: rgba(28, 43, 58, 0.94);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.55;
+  border-radius: 10px;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+  pointer-events: none;
+  opacity: 0;
+  white-space: normal;
+  z-index: 30;
+  transition: opacity 160ms ease;
+}
+
+.help-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(28, 43, 58, 0.94);
+}
+
+.help-btn:hover .help-tooltip,
+.help-btn:focus-visible .help-tooltip {
+  opacity: 1;
+}
+
 .scene-panel {
   position: relative;
   min-width: 0;
@@ -644,6 +713,18 @@ h1 {
 
   .field input {
     min-height: 36px;
+  }
+
+  .help-tooltip {
+    left: auto;
+    right: -8px;
+    transform: none;
+  }
+
+  .help-tooltip::after {
+    left: auto;
+    right: 13px;
+    transform: none;
   }
 
   .month-edge-nav {
