@@ -174,7 +174,7 @@ const BOARD_D = ROWS * TILE_STEP - TILE_GAP + PAD_Z_TOP + PAD_Z_BOT;
 const BOARD_H = 0.24;
 const BOARD_GAP = 1.18;
 const TOTAL_W = BOARD_W * 3 + BOARD_GAP * 2;
-const CUBE_SIZE = 0.34;
+const CUBE_SIZE = 0.52;
 const CUBE_GAP = 0;
 const CUBE_STEP = CUBE_SIZE + CUBE_GAP;
 const HOVER_LIFT = 0.16;
@@ -924,7 +924,10 @@ canvas.addEventListener("touchend", (event) => {
   if (!touchMoved) {
     const touch = event.changedTouches[0];
     const tileGroup = tileGroupFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
-    if (tileGroup) tileClick(tileGroup.userData.dateKey);
+    if (tileGroup) {
+      event.preventDefault();
+      tileClick(tileGroup.userData.dateKey);
+    }
   }
 });
 

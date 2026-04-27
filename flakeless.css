@@ -599,13 +599,31 @@ h1 {
     justify-content: space-between;
   }
 
+  .app-shell {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .control-panel {
+    grid-row: 1;
+  }
+
+  .action-bar {
+    grid-row: 2;
+    padding: 2px 0 4px;
+  }
+
   .scene-panel {
+    grid-row: 3;
     height: 480px;
     min-height: 480px;
   }
 
   .action-bar button {
     flex: 1;
+    min-height: 36px;
+    min-width: 0;
+    padding: 0 14px;
+    font-size: 13px;
   }
 
   #view-three-btn {
