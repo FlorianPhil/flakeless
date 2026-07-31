@@ -44,6 +44,10 @@
               <button id="view-three-btn" type="button" aria-pressed="true">3 months</button>
               <button id="view-one-btn" type="button" aria-pressed="false">1 month</button>
             </div>
+            <div class="view-toggle view-toggle--dim" role="group" aria-label="Display mode">
+              <button id="view-3d-btn" type="button" aria-pressed="true">3D</button>
+              <button id="view-flat-btn" type="button" aria-pressed="false">Flat</button>
+            </div>
             <div class="month-stepper" aria-label="Focused month">
               <output id="focus-month-label" aria-live="polite">May 2026</output>
             </div>
@@ -65,6 +69,7 @@
 
       <section class="scene-panel" aria-label="Availability calendar">
         <canvas id="scene-canvas"></canvas>
+        <div id="flat-calendar" class="flat-calendar" style="display:none"></div>
         <button id="prev-month-btn" class="month-edge-nav month-edge-nav--prev" type="button" aria-label="Previous month">&lsaquo;</button>
         <button id="next-month-btn" class="month-edge-nav month-edge-nav--next" type="button" aria-label="Next month">&rsaquo;</button>
       </section>

@@ -34,7 +34,8 @@ const defaultSettings = {
   mouseFollow: true,
   dateCaps: false,
   viewMode: "one",
-  activeMonth: 0
+  activeMonth: 0,
+  flatView: false
 };
 
 const loadSettings = () => {
@@ -130,7 +131,13 @@ function plural(count, singular, pluralText = `${singular}s`) {
 let state = { users: {}, picks: {} };
 
 const myId = getMyId();
-const monthWindow = [getMonthData(1), getMonthData(2), getMonthData(3)];
+
+const _now = new Date();
+const todayKey = `${_now.getFullYear()}-${pad2(_now.getMonth() + 1)}-${pad2(_now.getDate())}`;
+
+const monthWindow = EVENT_ID === "dome-hangout"
+  ? [getMonthData(0), getMonthData(1)]
+  : [getMonthData(1), getMonthData(2), getMonthData(3)];
 
 const nameField = document.getElementById("name-field");
 const nameInput = document.getElementById("name-input");
@@ -144,6 +151,9 @@ const canvas = document.getElementById("scene-canvas");
 const scenePanel = document.querySelector(".scene-panel");
 const viewThreeBtn = document.getElementById("view-three-btn");
 const viewOneBtn = document.getElementById("view-one-btn");
+const view3dBtn = document.getElementById("view-3d-btn");
+const viewFlatBtn = document.getElementById("view-flat-btn");
+const flatCalendarEl = document.getElementById("flat-calendar");
 const prevMonthBtn = document.getElementById("prev-month-btn");
 const nextMonthBtn = document.getElementById("next-month-btn");
 const focusMonthLabel = document.getElementById("focus-month-label");
@@ -158,6 +168,14 @@ let settings = loadSettings();
 if (!["one", "three"].includes(settings.viewMode)) settings.viewMode = defaultSettings.viewMode;
 if (window.innerWidth <= 720) settings.viewMode = "one";
 settings.activeMonth = Math.min(Math.max(Number(settings.activeMonth) || 0, 0), monthWindow.length - 1);
+if (settings.flatView) {
+  canvas.style.display = "none";
+  flatCalendarEl.style.display = "flex";
+  view3dBtn.setAttribute("aria-pressed", "false");
+  viewFlatBtn.setAttribute("aria-pressed", "true");
+} else {
+  flatCalendarEl.style.display = "none";
+}
 
 nameInput.value = myName;
 
@@ -229,6 +247,18 @@ const tileMaterial = new THREE.MeshStandardMaterial({
 
 const tileEdgeMaterial = new THREE.MeshStandardMaterial({
   color: new THREE.Color("#dfe5ed"),
+  roughness: 0.84,
+  metalness: 0
+});
+
+const todayTileMaterial = new THREE.MeshStandardMaterial({
+  color: new THREE.Color("#fff4e6"),
+  roughness: 0.78,
+  metalness: 0
+});
+
+const todayTileEdgeMaterial = new THREE.MeshStandardMaterial({
+  color: new THREE.Color("#f5d9b0"),
   roughness: 0.84,
   metalness: 0
 });
@@ -417,7 +447,10 @@ function buildBoard(index, monthData) {
       tileGroup.userData = { dateKey, hover: false, lift: 0, baseY };
       boardGroup.add(tileGroup);
 
-      const tile = new THREE.Mesh(tileGeometry, [tileMaterial, tileMaterial, tileEdgeMaterial, tileEdgeMaterial, tileMaterial, tileMaterial]);
+      const isToday = dateKey === todayKey;
+      const faceMat = isToday ? todayTileMaterial : tileMaterial;
+      const edgeMat = isToday ? todayTileEdgeMaterial : tileEdgeMaterial;
+      const tile = new THREE.Mesh(tileGeometry, [faceMat, faceMat, edgeMat, edgeMat, faceMat, faceMat]);
       tile.position.y = TILE_HEIGHT / 2;
       tile.castShadow = true;
       tile.receiveShadow = true;
@@ -633,6 +666,7 @@ async function lockPicks() {
     if (!res.ok) throw new Error();
     state = await fetchState();
     syncAll({ animateNew: false, animateRemove: false });
+    renderFlatCalendar();
     renderSwatches();
     renderLegend();
     renderStatus(`Locked ${pending.size} ${plural(pending.size, "date")}.`);
@@ -650,6 +684,7 @@ async function resetPending() {
     state = await fetchState();
   } catch { /* best effort */ }
   syncAll({ animateRemove: true });
+  renderFlatCalendar();
   renderLegend();
   renderStatus();
 }
@@ -668,6 +703,7 @@ function tileClick(dateKey) {
 
   const tileEntry = findTileEntry(dateKey);
   syncTile(dateKey, tileEntry, { animateNew: true, animateRemove: true });
+  renderFlatCalendar();
   renderLegend();
   renderStatus();
 }
@@ -826,6 +862,56 @@ function setViewMode(mode) {
   settings.viewMode = mode;
   saveSettings();
   applyMonthView();
+  if (settings.flatView) renderFlatCalendar();
+}
+
+const FC_DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+
+function renderFlatCalendar() {
+  if (!settings.flatView) return;
+  const months = settings.viewMode === "one"
+    ? [monthWindow[settings.activeMonth]]
+    : monthWindow;
+
+  flatCalendarEl.innerHTML = months.map((md) => {
+    const cells = md.weeks.flat().map((day) => {
+      if (!day) return `<div class="fc-cell fc-empty"></div>`;
+      const dateKey = md.key(day);
+      const isMine = pending.has(dateKey);
+      const isToday = dateKey === todayKey;
+      const others = (state.picks[dateKey] || []).filter((uid) => uid !== myId);
+      const dots = others.map((uid) => {
+        const u = state.users[uid];
+        return u ? `<span class="fc-dot" style="background:${u.color}"></span>` : "";
+      }).join("");
+      const classes = ["fc-cell", isMine && "fc-mine", isToday && "fc-today"].filter(Boolean).join(" ");
+      const style = isMine ? ` style="--my-color:${myColor}"` : "";
+      return `<div class="${classes}" data-date="${dateKey}"${style}><span class="fc-day-num">${day}</span><div class="fc-dots">${dots}</div></div>`;
+    }).join("");
+
+    return `<div class="fc-month">
+      <div class="fc-month-label">${md.label}</div>
+      <div class="fc-grid">
+        ${FC_DAYS.map((d) => `<div class="fc-wday">${d}</div>`).join("")}
+        ${cells}
+      </div>
+    </div>`;
+  }).join("");
+
+  flatCalendarEl.querySelectorAll(".fc-cell:not(.fc-empty)").forEach((cell) => {
+    cell.addEventListener("click", () => tileClick(cell.dataset.date));
+  });
+}
+
+function setFlatView(flat) {
+  settings.flatView = flat;
+  saveSettings();
+  canvas.style.display = flat ? "none" : "block";
+  flatCalendarEl.style.display = flat ? "flex" : "none";
+  view3dBtn.setAttribute("aria-pressed", String(!flat));
+  viewFlatBtn.setAttribute("aria-pressed", String(flat));
+  if (flat) renderFlatCalendar();
+  else resize();
 }
 
 function stepFocusedMonth(delta) {
@@ -835,6 +921,11 @@ function stepFocusedMonth(delta) {
   settings.viewMode = "one";
   settings.activeMonth = nextMonth;
   saveSettings();
+  if (settings.flatView) {
+    renderFlatCalendar();
+    if (focusMonthLabel) focusMonthLabel.textContent = monthWindow[nextMonth].label;
+    return;
+  }
   beginMonthSlide(previousMonth, nextMonth);
 }
 
@@ -936,6 +1027,8 @@ lockBtn.addEventListener("click", lockPicks);
 resetBtn.addEventListener("click", resetPending);
 viewThreeBtn.addEventListener("click", () => setViewMode("three"));
 viewOneBtn.addEventListener("click", () => setViewMode("one"));
+view3dBtn.addEventListener("click", () => setFlatView(false));
+viewFlatBtn.addEventListener("click", () => setFlatView(true));
 prevMonthBtn.addEventListener("click", () => stepFocusedMonth(-1));
 nextMonthBtn.addEventListener("click", () => stepFocusedMonth(1));
 
@@ -1079,6 +1172,7 @@ requestAnimationFrame(async () => {
   }
   pending = committedSetForMe();
   syncAll({ animateNew: true });
+  renderFlatCalendar();
   renderSwatches();
   renderLegend();
   renderStatus();
@@ -1087,6 +1181,7 @@ requestAnimationFrame(async () => {
 window.addEventListener("focus", async () => {
   state = await fetchState();
   syncAll({ animateNew: true, animateRemove: true });
+  renderFlatCalendar();
   renderSwatches();
   renderLegend();
   renderStatus();
