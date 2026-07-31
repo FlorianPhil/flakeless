@@ -5,9 +5,15 @@ export default async function handler(req, res) {
 
   res.setHeader("Cache-Control", "no-store");
 
+  const eventId = req.query.event || "mammoth";
+
   const [usersResult, picksResult] = await Promise.all([
-    sql`SELECT id, name, color FROM fl_users`,
-    sql`SELECT user_id, date_key FROM fl_picks`
+    sql`
+      SELECT DISTINCT u.id, u.name, u.color
+      FROM fl_users u
+      INNER JOIN fl_picks p ON p.user_id = u.id AND p.event_id = ${eventId}
+    `,
+    sql`SELECT user_id, date_key FROM fl_picks WHERE event_id = ${eventId}`
   ]);
 
   const users = {};

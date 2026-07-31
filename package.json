@@ -1,4 +1,6 @@
 {
+  "name": "flakeless",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +13,6 @@
     "three": "^0.164.1"
   },
   "devDependencies": {
-    "vite": "^8.0.10"
+    "vite": "^5.4.11"
   }
 }

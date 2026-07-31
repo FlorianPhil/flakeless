@@ -1,79 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="theme-color" content="#101820" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Flakeless</title>
-    <link rel="stylesheet" href="./flakeless.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Figtree:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
-    <pre id="error-overlay" class="error-overlay" hidden></pre>
-
-    <main class="app-shell">
-      <section class="control-panel" aria-label="Trip controls">
-        <div class="brand-block">
-          <div class="brand-mark" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="title-block">
-            <h1>Flakeless</h1>
-            <p class="tagline">By Florian P.</p>
-          </div>
-        </div>
-
-        <div class="planner-controls">
-          <label id="name-field" class="field">
-            <span>Name</span>
-            <input id="name-input" type="text" maxlength="28" autocomplete="name" placeholder="Your name" aria-describedby="name-error">
-            <small id="name-error" class="field-error" hidden>Name required before choosing dates.</small>
-          </label>
-
-          <div class="palette-field">
-            <span>Color</span>
-            <div id="color-swatches" class="swatches" aria-label="Color choices"></div>
-          </div>
-
-          <div class="view-controls" aria-label="Calendar view">
-            <div class="view-toggle" role="group" aria-label="View mode">
-              <button id="view-three-btn" type="button" aria-pressed="true">3 months</button>
-              <button id="view-one-btn" type="button" aria-pressed="false">1 month</button>
-            </div>
-            <div class="month-stepper" aria-label="Focused month">
-              <output id="focus-month-label" aria-live="polite">May 2026</output>
-            </div>
-          </div>
-        </div>
-
-        <div class="lower-rail">
-          <p id="status" class="status" role="status" aria-live="polite"></p>
-          <div id="legend" class="legend" aria-label="Participants"></div>
-        </div>
-      </section>
-
-      <section class="scene-panel" aria-label="Availability calendar">
-        <canvas id="scene-canvas"></canvas>
-        <button id="prev-month-btn" class="month-edge-nav month-edge-nav--prev" type="button" aria-label="Previous month">&lsaquo;</button>
-        <button id="next-month-btn" class="month-edge-nav month-edge-nav--next" type="button" aria-label="Next month">&rsaquo;</button>
-      </section>
-
-      <div class="action-bar">
-        <button id="lock-btn" type="button">Lock it in</button>
-        <button id="reset-btn" type="button" class="secondary">Clear picks</button>
-      </div>
-    </main>
-
-    <script>
-      const errorOverlay = document.getElementById('error-overlay');
-      function showPageError(error) {
-        const message = error && error.message ? error.message : String(error);
-        errorOverlay.hidden = false;
-        errorOverlay.textContent = message;
-      }
-      window.addEventListener('error', (event) => showPageError(event.error || event.message));
-      window.addEventListener('unhandledrejection', (event) => showPageError(event.reason));
-    </script>
-    <script type="module" src="./flakeless.js"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
